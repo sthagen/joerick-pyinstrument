@@ -47,6 +47,7 @@ class BuildAndUploadCommand(distutils.cmd.Command, CommandUtilities):
     def run(self):
         self.check_call(['rm', '-rf', 'dist'])
         self.run_command('build')
+        self.run_command('sdist')
         self.run_command('bdist_wheel')
         self.check_call(['twine upload dist/*'], shell=True)
 
@@ -56,7 +57,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
 setup(
     name="pyinstrument",
     packages=find_packages(),
-    version="3.0.3",
+    version="3.1.3",
     description="Call stack profiler for Python. Shows you why your code is slow!",
     long_description=long_description,
     long_description_content_type='text/markdown',

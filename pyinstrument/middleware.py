@@ -1,9 +1,15 @@
-from django.http import HttpResponse
-from django.conf import settings
-from pyinstrument import Profiler
+import io
+import os
 import sys
 import time
-import os
+
+from django.http import HttpResponse
+from django.conf import settings
+from django.utils.module_loading import import_string
+from pyinstrument import Profiler
+from pyinstrument.renderers.html import HTMLRenderer
+
+
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
@@ -14,18 +20,28 @@ class ProfilerMiddleware(MiddlewareMixin):
     def process_request(self, request):
         profile_dir = getattr(settings, 'PYINSTRUMENT_PROFILE_DIR', None)
 
-        if getattr(settings, 'PYINSTRUMENT_URL_ARGUMENT', 'profile') in request.GET or profile_dir:
+        func_or_path = getattr(settings, 'PYINSTRUMENT_SHOW_CALLBACK', None)
+        if isinstance(func_or_path, str):
+            show_pyinstrument = import_string(func_or_path)
+        elif callable(func_or_path):
+            show_pyinstrument = func_or_path
+        else:
+            show_pyinstrument = lambda request: True
+
+        if (show_pyinstrument(request) and
+            getattr(settings, 'PYINSTRUMENT_URL_ARGUMENT', 'profile') in request.GET
+        ) or profile_dir:
             profiler = Profiler()
             profiler.start()
 
             request.profiler = profiler
 
-
     def process_response(self, request, response):
         if hasattr(request, 'profiler'):
-            request.profiler.stop()
+            profile_session = request.profiler.stop()
 
-            output_html = request.profiler.output_html()
+            renderer = HTMLRenderer()
+            output_html = renderer.render(profile_session)
 
             profile_dir = getattr(settings, 'PYINSTRUMENT_PROFILE_DIR', None)
 
@@ -39,9 +55,9 @@ class ProfilerMiddleware(MiddlewareMixin):
 
             if profile_dir:
                 filename = '{total_time:.3f}s {path} {timestamp:.0f}.html'.format(
-                    total_time=request.profiler.root_frame().time(),
+                    total_time=profile_session.duration,
                     path=path,
-                    timestamp=time.time()
+                    timestamp=time.time(),
                 )
 
                 file_path = os.path.join(profile_dir, filename)
@@ -49,7 +65,7 @@ class ProfilerMiddleware(MiddlewareMixin):
                 if not os.path.exists(profile_dir):
                     os.mkdir(profile_dir)
 
-                with open(file_path, 'w') as f:
+                with io.open(file_path, 'w', encoding='utf-8') as f:
                     f.write(output_html)
 
             if getattr(settings, 'PYINSTRUMENT_URL_ARGUMENT', 'profile') in request.GET:

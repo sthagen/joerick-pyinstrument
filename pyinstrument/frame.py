@@ -175,8 +175,20 @@ class Frame(BaseFrame):
     @property
     def is_application_code(self):
         if self.identifier:
-            return (('%slib%s' % (os.sep, os.sep)) not in self.file_path
-                    and '<frozen importlib._bootstrap' not in self.file_path)
+            file_path = self.file_path
+
+            if ('%slib%s' % (os.sep, os.sep)) in file_path:
+                return False
+
+            if file_path.startswith('<'):
+                if file_path.startswith('<ipython-input-'):
+                    # lines typed at a console or in a notebook are app code
+                    return True
+                else:
+                    # otherwise, this is probably some library-internal code gen
+                    return False
+
+            return True
 
     @property
     def code_position_short(self):

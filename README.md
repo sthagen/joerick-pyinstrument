@@ -21,8 +21,6 @@ Documentation
   * [Flask](#profile-a-web-request-in-flask)
 * [How does it work?](#how-does-it-work)
 * [Changelog](#changelog)
-* [Further information](#further-information)
-  * [Call stack profiling?](#call-stack-profiling)
 * [Contributing](#contributing)
 
 Installation
@@ -97,6 +95,8 @@ print(profiler.output_text(unicode=True, color=True))
 (You can omit the `unicode` and `color` flags if your output/terminal does
 not support them.)
 
+**Protip:** To render the output as HTML, use `profiler.output_html()`
+
 ### Profile a web request in Django
 
 To profile Django web requests, add
@@ -111,6 +111,20 @@ If you're writing an API, it's not easy to change the URL when you want to
 profile something. In this case, add  `PYINSTRUMENT_PROFILE_DIR = 'profiles'`
 to your `settings.py`. Pyinstrument will profile every request and save the
 HTML output to the folder `profiles` in your working directory.
+
+If you want to show the profiling page depending on the request you can define 
+`PYINSTRUMENT_SHOW_CALLBACK` as dotted path to a function used for determining 
+whether the page should show or not.
+You can provide your own function callback(request) which returns True or False 
+in your settings.py.
+
+```python
+def custom_show_pyinstrument(request):
+    return request.user.is_superuser
+
+
+PYINSTRUMENT_SHOW_CALLBACK = "%s.custom_show_pyinstrument" % __name__
+```
 
 ### Profile a web request in Flask
 
@@ -250,6 +264,23 @@ samples were 'bunched up' and recorded at the end.
 
 Changelog
 ---------
+
+### v3.1.2
+
+- Fix `<__array_function__ internals>` frames appearing as app code in reports
+
+### v3.1.1
+
+- Added support for timeline mode on HTML and JSON renderers
+- Released as a tarball as well as a universal wheel
+
+### v3.1.0
+
+- Added PYINSTRUMENT_SHOW_CALLBACK option on the Django middleware to 
+  add a condition to showing the profile (could be used to run pyinstrument
+  on a live server!)
+- Fixed bug in the Django middleware where file would not be written because
+  of a unicode error
 
 ### v3.0.3
 
