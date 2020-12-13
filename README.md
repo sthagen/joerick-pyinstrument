@@ -30,7 +30,7 @@ Installation
 
 Pyinstrument supports Python 2.7 and 3.3+.
 
-> To run Pyinstrument from a git checkout or from a source tarball, there's a build step.
+> To run Pyinstrument from a git checkout, there's a build step.
 Take a look at [Contributing](#contributing) for more info.
 
 How to use it
@@ -265,6 +265,14 @@ samples were 'bunched up' and recorded at the end.
 Changelog
 ---------
 
+### v3.2.0
+
+- Added the ability to track time in C functions. Minor note - Pyinstrument 
+  will record time spent C functions as 'leaf' functions, due to a limitation
+  in how Python records frames. `Python -> C -> Python` is recorded as 
+  `Python -> Python`, but `Python -> Python -> C` will be attributed correctly.
+  (#103)
+
 ### v3.1.2
 
 - Fix `<__array_function__ internals>` frames appearing as app code in reports
@@ -457,16 +465,10 @@ To setup a dev envronment, do:
     . env/bin/activate
     pip install -r requirements-dev.txt
 
-> Note: if you get an SSL error doing the above, it might be due to setuptools trying
-> to install pytest-runner, since it's listed in setup_requires. The workaround is to 
-> make sure your pip is up-to-date (`curl https://bootstrap.pypa.io/get-pip.py | python`)
-> and then install it first `pip install pytest-runner`. Then try 
-> `pip install -r requirements-dev.txt`.
-
 To get some sample output:
 
     pyinstrument examples/wikipedia_article_word_count.py
 
 To run the tests:
 
-    python setup.py test
+    pytest
