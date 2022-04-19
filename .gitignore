@@ -1,13 +1,16 @@
 # virtualenv
 env/
 env2/
-env3/
+env3*/
 .Python
 /env
 
 # python
 *.pyc
 __pycache__/
+
+# C extensions
+*.so
 
 # distribution
 dist/
@@ -21,3 +24,6 @@ build
 
 # editor
 .vscode
+
+# docs
+docs/_build
