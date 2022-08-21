@@ -85,13 +85,13 @@ class TestCommandLine:
             [*pyinstrument_invocation, str(program_path), "arg1", "arg2"],
             stderr=subprocess.PIPE,
             check=True,
-            universal_newlines=True,
+            text=True,
         )
         process_native = subprocess.run(
             [sys.executable, str(program_path), "arg1", "arg2"],
             stderr=subprocess.PIPE,
             check=True,
-            universal_newlines=True,
+            text=True,
         )
 
         print("process_pyi.stderr", process_pyi.stderr)
@@ -108,14 +108,14 @@ class TestCommandLine:
             # stderr=subprocess.PIPE,
             check=True,
             cwd=tmp_path,
-            universal_newlines=True,
+            text=True,
         )
         process_native = subprocess.run(
             [sys.executable, "-m", "test_module", "arg1", "arg2"],
             # stderr=subprocess.PIPE,
             check=True,
             cwd=tmp_path,
-            universal_newlines=True,
+            text=True,
         )
 
         print("process_pyi.stderr", process_pyi.stderr)
@@ -142,13 +142,13 @@ class TestCommandLine:
             ],
             stderr=subprocess.PIPE,
             check=True,
-            universal_newlines=True,
+            text=True,
         )
         process_native = subprocess.run(
             ["pyi_test_program", "arg1", "arg2"],
             stderr=subprocess.PIPE,
             check=True,
-            universal_newlines=True,
+            text=True,
         )
 
         print("process_pyi.stderr", process_pyi.stderr)
@@ -177,5 +177,21 @@ class TestCommandLine:
 
         # run pyinstrument again to render the output
         output = subprocess.check_output([*pyinstrument_invocation, f"--load={session_file}"])
+        assert "busy_wait" in str(output)
+        assert "do_nothing" in str(output)
+
+    def test_interval(self, pyinstrument_invocation, tmp_path: Path):
+        busy_wait_py = tmp_path / "busy_wait.py"
+        busy_wait_py.write_text(BUSY_WAIT_SCRIPT)
+
+        output = subprocess.check_output(
+            [
+                *pyinstrument_invocation,
+                "--interval",
+                "0.002",
+                str(busy_wait_py),
+            ]
+        )
+
         assert "busy_wait" in str(output)
         assert "do_nothing" in str(output)

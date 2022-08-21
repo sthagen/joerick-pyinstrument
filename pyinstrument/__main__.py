@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from __future__ import annotations
 
 import codecs
@@ -12,11 +10,11 @@ import runpy
 import shutil
 import sys
 import time
-from typing import Any, List, TextIO, Type, cast
+from typing import Any, List, TextIO, cast
 
 import pyinstrument
 from pyinstrument import Profiler, renderers
-from pyinstrument.frame import BaseFrame
+from pyinstrument.frame import Frame
 from pyinstrument.processors import ProcessorOptions
 from pyinstrument.session import Session
 from pyinstrument.util import (
@@ -218,6 +216,20 @@ def main():
         action="store_false",
         help="(text renderer only) force no color text output",
     )
+    parser.add_option(
+        "-i",
+        "--interval",
+        action="store",
+        type=float,
+        help=(
+            "Minimum time, in seconds, between each stack sample. Smaller values "
+            "allow resolving shorter duration function calls but conversely incur a "
+            "greater runtime and memory consumption overhead. For longer running "
+            "scripts, setting a larger interval can help control the rate at which "
+            "the memory required to store the stack samples increases."
+        ),
+        default=0.001,
+    )
 
     # parse the options
 
@@ -230,7 +242,7 @@ def main():
     # make command line options type-checked
     options = cast(CommandLineOptions, options)
     # work around a type checking bug...
-    args = cast(List[str], args)
+    args = cast(List[str], args)  # type: ignore
 
     session_options_used = [
         options.load is not None,
@@ -303,7 +315,7 @@ def main():
         # because it will always be capturing the whole program, we never want
         # any execution to be <out-of-context>, and it avoids duplicate
         # profiler errors.
-        profiler = Profiler(async_mode="disabled")
+        profiler = Profiler(interval=options.interval, async_mode="disabled")
 
         profiler.start()
 
@@ -342,7 +354,7 @@ def main():
 
 
 def compute_render_options(
-    options: CommandLineOptions, renderer_class: Type[renderers.Renderer], output_file: TextIO
+    options: CommandLineOptions, renderer_class: type[renderers.Renderer], output_file: TextIO
 ) -> dict[str, Any]:
     # parse show/hide options
     if options.hide_fnmatch is not None and options.hide_regex is not None:
@@ -439,7 +451,7 @@ def create_renderer(options: CommandLineOptions, output_file: TextIO) -> rendere
         )
 
 
-def get_renderer_class(renderer: str) -> Type[renderers.Renderer]:
+def get_renderer_class(renderer: str) -> type[renderers.Renderer]:
     if renderer == "text":
         return renderers.ConsoleRenderer
     elif renderer == "html":
@@ -524,8 +536,8 @@ def save_report_to_temp_storage(session: Session):
 
 # pylint: disable=W0613
 def remove_first_pyinstrument_frame_processor(
-    frame: BaseFrame | None, options: ProcessorOptions
-) -> BaseFrame | None:
+    frame: Frame | None, options: ProcessorOptions
+) -> Frame | None:
     """
     The first frame when using the command line is always the __main__ function. I want to remove
     that from the output.
@@ -567,6 +579,7 @@ class CommandLineOptions:
     color: bool | None
     renderer: str
     timeline: bool
+    interval: float
 
 
 if __name__ == "__main__":
