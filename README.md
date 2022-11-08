@@ -54,6 +54,17 @@ Known issues
 Changelog
 ---------
 
+### v4.4.0
+
+_5 November 2022_
+
+-   Adds the class name to methods in the console & HTML outputs (#203)
+-   Fix a bug that caused pyinstrument machinery to appear at the start of a profile (#215)
+-   Frames that set a `__traceback_hide__` local variable will now be removed from the output (#217)
+-   Jupyter/IPython magic now supports async/await, if you run with a `--async_mode=enabled` flag. (#212)
+-   Fix a crash when more than one root frame is captured in a thread - this can happen with gevent.
+-   A big refactor to the backend, allowing more than just static information to be captured. This currently is just powering the class name feature, but more is to come!
+
 ### v4.3.0
 
 _21 August 2022_
