@@ -8,6 +8,13 @@ on:
 
   pull_request:
     branches: [ main ]
+    # only run on pull requests that change a C file or build system
+    paths:
+    - '**.c'
+    - setup.py
+    - setup.cfg
+    - pyproject.toml
+    - .github/workflows/wheels.yml
 
 jobs:
   build_wheels:
@@ -34,7 +41,7 @@ jobs:
           python-version: '3.8'
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.12.1
+        uses: joerick/cibuildwheel@v2.12.3
         env:
           CIBW_SKIP: pp*
           CIBW_ARCHS: ${{matrix.archs}}
