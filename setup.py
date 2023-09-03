@@ -9,7 +9,7 @@ long_description = (PROJECT_ROOT / "README.md").read_text(encoding="utf8")
 setup(
     name="pyinstrument",
     packages=find_namespace_packages(include=["pyinstrument*"]),
-    version="4.5.1",
+    version="4.5.2",
     ext_modules=[
         Extension(
             "pyinstrument.low_level.stat_profile",
@@ -24,7 +24,35 @@ setup(
     url="https://github.com/joerick/pyinstrument",
     keywords=["profiling", "profile", "profiler", "cpu", "time", "sampling"],
     install_requires=[],
-    extras_require={"jupyter": ["ipython"]},
+    extras_require={
+        "test": [
+            "pytest",
+            "flaky",
+            "trio",
+            "greenlet>=3.0.0a1",
+            "pytest-asyncio==0.12.0",  # pinned to an older version due to an incompatibility with flaky
+            "sphinx-autobuild==2021.3.14",
+            "ipython",
+        ],
+        "bin": [
+            "click",
+            "nox",
+        ],
+        "docs": [
+            "sphinx==4.2.0",
+            "myst-parser==0.15.1",
+            "furo==2021.6.18b36",
+            "sphinxcontrib-programoutput==0.17",
+        ],
+        "examples": [
+            "numpy",
+            "django",
+            "ascii_graph @ https://github.com/nyurik/py-ascii-graph/archive/refs/heads/fix-python310.zip",
+        ],
+        "types": [
+            "typing_extensions",
+        ],
+    },
     include_package_data=True,
     python_requires=">=3.7",
     entry_points={"console_scripts": ["pyinstrument = pyinstrument.__main__:main"]},
