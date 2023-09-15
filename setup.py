@@ -9,7 +9,7 @@ long_description = (PROJECT_ROOT / "README.md").read_text(encoding="utf8")
 setup(
     name="pyinstrument",
     packages=find_namespace_packages(include=["pyinstrument*"]),
-    version="4.5.2",
+    version="4.5.3",
     ext_modules=[
         Extension(
             "pyinstrument.low_level.stat_profile",
@@ -47,7 +47,6 @@ setup(
         "examples": [
             "numpy",
             "django",
-            "ascii_graph @ https://github.com/nyurik/py-ascii-graph/archive/refs/heads/fix-python310.zip",
         ],
         "types": [
             "typing_extensions",
