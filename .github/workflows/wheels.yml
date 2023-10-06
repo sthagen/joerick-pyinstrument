@@ -33,7 +33,7 @@ jobs:
 
       - name: Set up QEMU
         if: ${{ matrix.archs == 'aarch64' }}
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - uses: actions/setup-python@v2
         name: Install Python
@@ -41,7 +41,7 @@ jobs:
           python-version: '3.8'
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v2.15.0
+        uses: joerick/cibuildwheel@v2.16.1
         env:
           CIBW_SKIP: pp*
           CIBW_ARCHS: ${{matrix.archs}}
