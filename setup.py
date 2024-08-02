@@ -9,11 +9,15 @@ long_description = (PROJECT_ROOT / "README.md").read_text(encoding="utf8")
 setup(
     name="pyinstrument",
     packages=find_namespace_packages(include=["pyinstrument*"]),
-    version="4.6.2",
+    version="4.7.0",
     ext_modules=[
         Extension(
             "pyinstrument.low_level.stat_profile",
-            sources=["pyinstrument/low_level/stat_profile.c"],
+            sources=[
+                "pyinstrument/low_level/stat_profile.c",
+                "pyinstrument/low_level/pyi_floatclock.c",
+                "pyinstrument/low_level/pyi_timing_thread.c",
+            ],
         )
     ],
     description="Call stack profiler for Python. Shows you why your code is slow!",
@@ -49,6 +53,7 @@ setup(
         "examples": [
             "numpy",
             "django",
+            "litestar",
         ],
         "types": [
             "typing_extensions",

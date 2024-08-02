@@ -24,6 +24,10 @@ print('os.getcwd()', os.getcwd(), file=sys.stderr)
     (["pyinstrument"], [sys.executable, "-m", "pyinstrument"]),
 )
 class TestCommandLine:
+    @pytest.fixture(autouse=True)
+    def _suppress_warnings(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setenv("PYINSTRUMENT_IGNORE_OVERHEAD_WARNING", "1")
+
     def test_command_line(self, pyinstrument_invocation, tmp_path: Path):
         busy_wait_py = tmp_path / "busy_wait.py"
         busy_wait_py.write_text(BUSY_WAIT_SCRIPT)
@@ -101,6 +105,8 @@ class TestCommandLine:
 
         # check the output
         output = subprocess.check_output([*pyinstrument_invocation, "-c", BUSY_WAIT_SCRIPT])
+
+        print(output.decode("utf-8"))
 
         assert "busy_wait" in str(output)
         assert "do_nothing" in str(output)
