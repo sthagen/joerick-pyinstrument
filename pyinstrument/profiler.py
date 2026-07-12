@@ -228,7 +228,7 @@ class Profiler:
 
         self._last_session = None
 
-    def __enter__(self):
+    def __enter__(self) -> Profiler:
         """
         Context manager support.
 
@@ -246,7 +246,12 @@ class Profiler:
         self.start(caller_frame=inspect.currentframe().f_back)  # type: ignore
         return self
 
-    def __exit__(self, *args: Any):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: types.TracebackType | None,
+    ) -> None:
         self.stop()
 
     # pylint: disable=W0613
