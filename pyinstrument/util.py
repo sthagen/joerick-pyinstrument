@@ -10,6 +10,23 @@ from typing import IO, Any, AnyStr, Callable
 from pyinstrument.vendor.decorator import decorator
 
 
+def _user_data_dir() -> str:
+    appname = "pyinstrument"
+    appauthor = "com.github.joerick"
+
+    if sys.platform == "win32":
+        data_dir = os.getenv("LOCALAPPDATA") or os.path.expanduser("~/AppData/Local")
+        return os.path.normpath(os.path.join(data_dir, appauthor, appname))
+    elif sys.platform == "darwin":
+        return os.path.expanduser(os.path.join("~/Library/Application Support", appname))
+    else:
+        data_dir = os.getenv("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+        return os.path.join(data_dir, appname)
+
+
+USER_DATA_DIR = _user_data_dir()
+
+
 def object_with_import_path(import_path: str) -> Any:
     if "." not in import_path:
         raise ValueError("Can't import '%s', it is not a valid import path" % import_path)

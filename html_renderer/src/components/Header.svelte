@@ -4,7 +4,6 @@
   import Logo from './Logo.svelte';
   import {viewOptions} from '../lib/settings'
   import ViewOptions from "./ViewOptions.svelte";
-  import { htmlForStringWithWBRAtSlashes } from "../lib/utils";
 
   export let session: Session;
 
@@ -25,8 +24,8 @@
         <Logo />
       </div>
       <div class="layout">
-        <div class="target-description">
-          {@html htmlForStringWithWBRAtSlashes(session.target_description)}
+        <div class="target-description" title={session.target_description}>
+          {session.target_description}
         </div>
         <div class="metrics">
           <div class="metric date">
@@ -88,9 +87,10 @@
   }
   .layout {
     flex: 1;
+    min-width: 0;
     display: grid;
     gap: 0 10px;
-    grid-template-columns: auto minmax(auto, max-content);
+    grid-template-columns: minmax(0, 1fr) minmax(auto, max-content);
   }
   @media (max-width: 800px) {
     .layout {
@@ -100,6 +100,9 @@
   .target-description {
     font-weight: 600;
     margin-bottom: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .view-options {
     display: flex;

@@ -41,7 +41,10 @@ setup(
         ],
         "bin": [
             "click",
+        ],
+        "tools": [
             "nox",
+            "prek",
         ],
         "docs": [
             "sphinx==7.4.7",

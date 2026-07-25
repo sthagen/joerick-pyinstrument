@@ -56,6 +56,9 @@ repos:
         entry: bin/build_js_bundle.py --force
         files: html_renderer/.*
         language: node
+        # package.json lives in html_renderer; this ensures Node is provisioned for the hook.
+        additional_dependencies:
+        -   npm
         pass_filenames: false
 
 -   repo: https://github.com/asottile/pyupgrade

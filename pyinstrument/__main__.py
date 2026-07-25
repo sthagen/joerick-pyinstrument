@@ -15,12 +15,13 @@ import pyinstrument
 from pyinstrument import Profiler, renderers
 from pyinstrument.session import Session
 from pyinstrument.util import (
+    USER_DATA_DIR,
     file_is_a_tty,
     file_supports_color,
     file_supports_unicode,
     object_with_import_path,
 )
-from pyinstrument.vendor import appdirs, keypath
+from pyinstrument.vendor import keypath
 
 # pyright: strict
 # pyright: reportUnknownMemberType=false
@@ -609,8 +610,7 @@ def guess_renderer_from_outfile(outfile: str) -> str | None:
 
 
 def report_dir() -> str:
-    data_dir = appdirs.user_data_dir("pyinstrument", "com.github.joerick")  # type: ignore
-    report_dir = os.path.join(data_dir, "reports")
+    report_dir = os.path.join(USER_DATA_DIR, "reports")
     if not os.path.exists(report_dir):
         os.makedirs(report_dir)
     return report_dir
