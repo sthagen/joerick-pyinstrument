@@ -2,8 +2,13 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
+[tool.ruff]
 line-length = 100
+target-version = "py38"
+exclude = ["pyinstrument/renderers/html_resources/app.js", "pyinstrument/vendor"]
+
+[tool.ruff.lint]
+select = ["I"]
 
 [tool.pyright]
 include = ["pyinstrument", "test"]

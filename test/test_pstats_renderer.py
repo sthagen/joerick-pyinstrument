@@ -2,13 +2,13 @@ import os
 import time
 from pathlib import Path
 from pstats import Stats
-from test.fake_time_util import FakeClock, fake_time
 from typing import Any
 
 import pytest
 
 from pyinstrument import Profiler
 from pyinstrument.renderers import PstatsRenderer
+from test.fake_time_util import FakeClock, fake_time
 
 
 def a():

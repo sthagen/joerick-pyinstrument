@@ -54,6 +54,18 @@ Known issues
 Changelog
 ---------
 
+### v5.1.3
+
+_29 July 2026_
+
+-    Fixed Django middleware so PYINSTRUMENT_SHOW_CALLBACK is respected when PYINSTRUMENT_PROFILE_DIR is configured, allowing profiles to be selectively written to disk (#452).
+-    Fixed Jupyter’s %%pyinstrument magic so console-specific render options—including time=percent_of_total, flat, short_mode, color, and Unicode settings—are correctly applied to text output (#446).
+-    Fixed long program and command names overflowing the header in HTML reports. Long names now wrap cleanly (#449).
+-    Added context-manager type annotations so type checkers correctly infer profile as a Profiler in with Profiler() as profile: blocks (#445).
+-    Expanded wheel-building coverage to include CPython prereleases and GraalPy (#442).
+-    Replaced the deprecated vendored appdirs implementation with simpler internal platform-specific user-data-directory handling (#451).
+-    Updated build tooling and dependencies, including cibuildwheel and GitHub Actions.
+
 ### v5.1.2
 
 _4 January 2026_

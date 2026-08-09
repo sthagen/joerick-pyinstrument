@@ -323,9 +323,9 @@ class Frame:
             return
 
         calculated_time = sum(child.time for child in self.children) + self.absorbed_time
-        assert math.isclose(
-            calculated_time, self.time
-        ), f"Frame time mismatch, should be {calculated_time}, was {self.time}, {self.children}"
+        assert math.isclose(calculated_time, self.time), (
+            f"Frame time mismatch, should be {calculated_time}, was {self.time}, {self.children}"
+        )
 
         if recursive:
             for child in self.children:

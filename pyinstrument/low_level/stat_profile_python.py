@@ -50,7 +50,7 @@ class PythonStatProfiler:
 
         self.last_invocation = self.get_time()
 
-        self.last_context_var_value = context_var.get() if context_var else None
+        self.last_context_var_value = context_var.get(None) if context_var else None
         self.await_stack = []
 
     def __del__(self):
@@ -61,7 +61,7 @@ class PythonStatProfiler:
         now = self.get_time()
 
         if self.context_var:
-            context_var_value = self.context_var.get()
+            context_var_value = self.context_var.get(None)
             last_context_var_value = self.last_context_var_value
 
             if context_var_value is not last_context_var_value:

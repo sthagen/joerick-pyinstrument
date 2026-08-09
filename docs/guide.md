@@ -179,6 +179,9 @@ def custom_show_pyinstrument(request):
 PYINSTRUMENT_SHOW_CALLBACK = "%s.custom_show_pyinstrument" % __name__
 ```
 
+This callback also applies when `PYINSTRUMENT_PROFILE_DIR` is set, so it can be
+used to select which requests get written to the profile directory.
+
 You can configure the profile output type using setting's variable `PYINSTRUMENT_PROFILE_DIR_RENDERER`.
 Default value is `pyinstrument.renderers.HTMLRenderer`. The supported renderers are
 `pyinstrument.renderers.JSONRenderer`, `pyinstrument.renderers.HTMLRenderer`,

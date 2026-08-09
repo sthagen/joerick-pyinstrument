@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextvars
+import sys
 import time
 from typing import Any
 
@@ -14,6 +15,17 @@ from .util import parametrize_setstatprofile
 def test_context_type(setstatprofile):
     with pytest.raises(TypeError):
         setstatprofile(lambda f, e, a: 0, 1e6, "not a context var")
+        setstatprofile(None)
+
+
+@parametrize_setstatprofile
+def test_context_without_default(setstatprofile):
+    context_var: contextvars.ContextVar[object | None] = contextvars.ContextVar("context_var")
+
+    setstatprofile(lambda frame, event, arg: None, context_var=context_var)
+    try:
+        assert sys.getprofile() is not None
+    finally:
         setstatprofile(None)
 
 

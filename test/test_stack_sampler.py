@@ -141,3 +141,34 @@ def test_same_callback_twice_error():
         sampler.subscribe(counter.sample, desired_interval=0.001, use_async_context=False)
 
     sampler.unsubscribe(counter.sample)
+
+
+@tidy_up_profiler_state_on_fail
+def test_failed_subscription_rolls_back_state():
+    sampler = stack_sampler.get_stack_sampler()
+    counter_1 = SampleCounter()
+    counter_2 = SampleCounter()
+
+    sampler.subscribe(
+        counter_1.sample,
+        desired_interval=0.001,
+        use_timing_thread=False,
+        use_async_context=False,
+    )
+    active_profile = sys.getprofile()
+
+    try:
+        with pytest.raises(ValueError, match="different timing thread preferences"):
+            sampler.subscribe(
+                counter_2.sample,
+                desired_interval=0.001,
+                use_timing_thread=True,
+                use_async_context=True,
+            )
+
+        assert [subscriber.target for subscriber in sampler.subscribers] == [counter_1.sample]
+        assert stack_sampler.active_profiler_context_var.get() is None
+        assert sys.getprofile() is active_profile
+        assert sampler.current_sampling_interval == 0.001
+    finally:
+        sampler.unsubscribe(counter_1.sample)

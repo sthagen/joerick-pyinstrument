@@ -46,10 +46,9 @@ class ProfilerMiddleware(MiddlewareMixin):  # type: ignore
         else:
             show_pyinstrument = lambda request: True
 
-        if (
-            show_pyinstrument(request)
-            and getattr(settings, "PYINSTRUMENT_URL_ARGUMENT", "profile") in request.GET
-        ) or profile_dir:
+        if show_pyinstrument(request) and (
+            getattr(settings, "PYINSTRUMENT_URL_ARGUMENT", "profile") in request.GET or profile_dir
+        ):
             interval: float = getattr(settings, "PYINSTRUMENT_INTERVAL", 0.001)
             profiler = Profiler(interval=interval)
             profiler.start()

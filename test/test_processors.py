@@ -1,11 +1,11 @@
 import os
 import sys
-from test.util import calculate_frame_tree_times, dummy_session
 
 from pytest import approx
 
 from pyinstrument import processors
 from pyinstrument.frame import SELF_TIME_FRAME_IDENTIFIER, Frame
+from test.util import calculate_frame_tree_times, dummy_session
 
 ALL_PROCESSORS = [
     processors.aggregate_repeated_calls,

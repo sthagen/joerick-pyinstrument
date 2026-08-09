@@ -4,7 +4,6 @@ import inspect
 import json
 import time
 from functools import partial
-from test.fake_time_util import fake_time
 from typing import Generator, Optional
 
 import pytest
@@ -13,8 +12,9 @@ from pyinstrument import Profiler, renderers
 from pyinstrument.frame import Frame
 from pyinstrument.renderers.speedscope import SpeedscopeEvent, SpeedscopeEventType, SpeedscopeFrame
 from pyinstrument.session import Session
+from test.fake_time_util import fake_time
 
-from .util import assert_never, busy_wait, flaky_in_ci
+from .util import assert_never, busy_wait, dummy_session, flaky_in_ci
 
 # Utilities #
 
@@ -41,6 +41,16 @@ class ClassWithMethods:
 
 
 # Tests #
+
+
+def test_session_root_frame_with_no_start_call_stack():
+    session = dummy_session()
+    session.frame_records = [(["root\x00file.py\x001"], 0.1)]
+
+    root_frame = session.root_frame()
+
+    assert root_frame is not None
+    assert root_frame.identifier == "root\x00file.py\x001"
 
 
 def test_collapses_multiple_calls_by_default():
@@ -382,20 +392,20 @@ def test_profiler_convenience_methods_have_all_options_available(
             # these options have been deprecated
             continue
 
-        assert (
-            name in method_signature.parameters
-        ), f"Parameter {name} is missing from Profiler.{profiler_method_name}. {parameter}"
+        assert name in method_signature.parameters, (
+            f"Parameter {name} is missing from Profiler.{profiler_method_name}. {parameter}"
+        )
         method_parameter = method_signature.parameters[name]
 
         if profiler_method_name == "print" and name in {"color", "unicode"}:
             # print has a mechanism of autodetecting these
             continue
-        assert (
-            method_parameter.default == parameter.default
-        ), f"Parameter {name} has a different default value in Profiler.{profiler_method_name}. {parameter}"
-        assert (
-            method_parameter.annotation == parameter.annotation
-        ), f"Parameter {name} has a different annotation in Profiler.{profiler_method_name}. {parameter}"
+        assert method_parameter.default == parameter.default, (
+            f"Parameter {name} has a different default value in Profiler.{profiler_method_name}. {parameter}"
+        )
+        assert method_parameter.annotation == parameter.annotation, (
+            f"Parameter {name} has a different annotation in Profiler.{profiler_method_name}. {parameter}"
+        )
 
 
 def test_profiler_raises_on_double_subscribe():

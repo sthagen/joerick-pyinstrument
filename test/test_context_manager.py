@@ -1,9 +1,8 @@
-from test.fake_time_util import fake_time
-
 import pytest
 
 import pyinstrument
 from pyinstrument.context_manager import ProfileContext
+from test.fake_time_util import fake_time
 
 
 def test_profile_context_decorator(capfd):

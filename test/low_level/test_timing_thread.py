@@ -31,7 +31,7 @@ PYI_TIMING_THREAD_TOO_MANY_SUBSCRIBERS = -2
 
 if sys.platform == "win32":
     # on windows, the thread scheduling 'quanta', the time that a thread can run
-    # before potentially being pre-empted, is 20-30ms. This means that the
+    # before potentially being preempted, is 20-30ms. This means that the
     # worst-case, we have to wait 30ms before the timing thread gets a chance to
     # run. This isn't really a huge problem in practice, because thread-based
     # timing isn't much use on windows, since the synchronous timing functions are

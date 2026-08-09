@@ -168,7 +168,7 @@ class Session:
 
         start_stack = deque(frame_info_get_identifier(info) for info in self.start_call_stack)
 
-        if start_stack.popleft() != frame.identifier:
+        if not start_stack or start_stack.popleft() != frame.identifier:
             # the frame doesn't match where the profiler was started. Don't trim.
             return frame
 

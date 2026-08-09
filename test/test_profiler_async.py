@@ -2,7 +2,6 @@ import asyncio
 import sys
 import time
 from functools import partial
-from test.fake_time_util import fake_time, fake_time_asyncio, fake_time_trio
 from typing import Optional
 
 import pytest
@@ -11,6 +10,7 @@ from pyinstrument import processors, stack_sampler
 from pyinstrument.frame import AWAIT_FRAME_IDENTIFIER, OUT_OF_CONTEXT_FRAME_IDENTIFIER, Frame
 from pyinstrument.profiler import Profiler
 from pyinstrument.session import Session
+from test.fake_time_util import fake_time, fake_time_asyncio, fake_time_trio
 
 from .util import assert_never, flaky_in_ci, walk_frames
 

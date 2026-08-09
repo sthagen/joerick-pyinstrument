@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import sys
 import time
 from typing import Callable, Generator, Generic, Iterable, Iterator, NoReturn, Optional, TypeVar
@@ -21,6 +22,10 @@ else:
 
 def assert_never(x: NoReturn) -> NoReturn:
     raise AssertionError(f"Invalid value: {x!r}")
+
+
+def strip_ansi(value: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", value)
 
 
 def do_nothing():

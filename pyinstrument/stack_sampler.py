@@ -75,27 +75,41 @@ class StackSampler:
         use_timing_thread: bool | None = None,
         use_async_context: bool,
     ):
-        if use_async_context:
-            if active_profiler_context_var.get() is not None:
-                raise RuntimeError(
-                    "There is already a profiler running. You cannot run multiple profilers in the same thread or async context, unless you disable async support."
-                )
-            active_profiler_context_var.set(target)
+        if use_async_context and active_profiler_context_var.get() is not None:
+            raise RuntimeError(
+                "There is already a profiler running. You cannot run multiple profilers in the same thread or async context, unless you disable async support."
+            )
 
         existing_subscriber = next((s for s in self.subscribers if s.target == target), None)
         if existing_subscriber is not None:
             raise ValueError("This target is already subscribed to the stack sampler.")
 
-        self.subscribers.append(
-            StackSamplerSubscriber(
-                target=target,
-                desired_interval=desired_interval,
-                use_timing_thread=use_timing_thread,
-                bound_to_async_context=use_async_context,
-                async_state=AsyncState("in_context") if use_async_context else None,
-            )
+        subscriber = StackSamplerSubscriber(
+            target=target,
+            desired_interval=desired_interval,
+            use_timing_thread=use_timing_thread,
+            bound_to_async_context=use_async_context,
+            async_state=AsyncState("in_context") if use_async_context else None,
         )
-        self._update()
+
+        context_token = None
+        if use_async_context:
+            context_token = active_profiler_context_var.set(target)
+
+        try:
+            self.subscribers.append(subscriber)
+            self._update()
+        except BaseException:
+            if subscriber in self.subscribers:
+                self.subscribers.remove(subscriber)
+            if context_token is not None:
+                active_profiler_context_var.reset(context_token)
+            try:
+                self._update()
+            except BaseException:
+                # Preserve the original subscription error if rollback also fails.
+                pass
+            raise
 
     def unsubscribe(self, target: StackSamplerSubscriberTarget):
         try:
@@ -250,8 +264,9 @@ class StackSampler:
                         overhead ({overheads["walltime_coarse"] * 1e9:.2g}
                         nanoseconds). You can enable it by setting
                         pyinstrument's interval to a value higher than
-                        {format_float_with_sig_figs(coarse_resolution,
-                        trim_zeroes=True)} seconds. If you're happy with the
+                        {
+                            format_float_with_sig_figs(coarse_resolution, trim_zeroes=True)
+                        } seconds. If you're happy with the
                         lower precision, this is the best option.
                         """
                     )

@@ -143,7 +143,7 @@ class HTMLRenderer(Renderer):
             with codecs.getwriter("utf-8")(output_file) as f:
                 f.write(self.render(session))
         else:
-            with codecs.open(output_filename, "w", "utf-8") as f:
+            with open(output_filename, "w", encoding="utf-8") as f:
                 f.write(self.render(session))
 
         url = urllib.parse.urlunparse(("file", "", output_filename, "", "", ""))

@@ -70,5 +70,5 @@ max_time = max([t[1] for t in graph_data])
 for name, time in graph_data:
     chars = int((time / max_time) * GRAPH_WIDTH)
     spaces = GRAPH_WIDTH - chars
-    print(f'{name:15}  {"█" * chars}{" " * spaces}  {time:.3f}s')
+    print(f"{name:15}  {'█' * chars}{' ' * spaces}  {time:.3f}s")
 print()
